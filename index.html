@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eggbot's Playground</title>
+    <title>The Distributed Brain</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -14,10 +14,19 @@
             box-sizing: border-box;
         }
         
+        :root {
+            --brain: #ff6b6b;
+            --gut: #ffd93d;
+            --heart: #e84a5f;
+            --spine: #2ecc71;
+            --bg: #0a0a0f;
+            --text: #e8e8e8;
+        }
+        
         body {
             font-family: 'Courier New', monospace;
-            background: #0a0a0f;
-            color: #e0e0e0;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -34,205 +43,222 @@
             align-items: center;
             position: relative;
             background: 
-                radial-gradient(ellipse at 20% 80%, rgba(120, 80, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(255, 100, 150, 0.1) 0%, transparent 50%),
-                linear-gradient(180deg, #0a0a0f 0%, #12121a 100%);
+                radial-gradient(ellipse at 50% 0%, rgba(255, 107, 107, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 20% 80%, rgba(255, 217, 61, 0.1) 0%, transparent 40%),
+                radial-gradient(ellipse at 80% 60%, rgba(232, 74, 95, 0.1) 0%, transparent 40%),
+                linear-gradient(180deg, #0a0a0f 0%, #0f0f18 100%);
         }
         
-        .egg {
-            font-size: 120px;
-            animation: float 3s ease-in-out infinite;
-            cursor: pointer;
-            transition: transform 0.3s;
-            filter: drop-shadow(0 0 30px rgba(255, 200, 100, 0.3));
-        }
-        
-        .egg:hover {
-            transform: scale(1.1) rotate(5deg);
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        h1 {
-            font-size: 3.5rem;
-            margin: 20px 0;
-            background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #9b59b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient-shift 5s ease infinite;
-            background-size: 200% 200%;
-        }
-        
-        @keyframes gradient-shift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+        .title {
+            font-size: 4rem;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 0.1em;
         }
         
         .subtitle {
             font-size: 1.2rem;
-            color: #888;
-            margin-bottom: 40px;
+            color: #666;
+            margin-bottom: 60px;
+            font-style: italic;
         }
         
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 40px;
-            max-width: 900px;
+        .human {
+            position: relative;
+            width: 300px;
+            height: 500px;
+            margin: 40px 0;
+        }
+        
+        .body-outline {
+            position: absolute;
             width: 100%;
+            height: 100%;
+            opacity: 0.15;
         }
         
-        .card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 30px;
+        .neuron-cluster {
+            position: absolute;
+            border-radius: 50%;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
             text-align: center;
+            line-height: 1.2;
         }
         
-        .card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-5px);
-            border-color: rgba(255, 200, 100, 0.3);
+        .neuron-cluster:hover {
+            transform: scale(1.2);
+            z-index: 10;
         }
         
-        .card-icon {
-            font-size: 40px;
+        .neuron-cluster.brain {
+            width: 80px;
+            height: 80px;
+            background: var(--brain);
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 40px var(--brain);
+        }
+        
+        .neuron-cluster.brain:hover {
+            transform: translateX(-50%) scale(1.2);
+        }
+        
+        .neuron-cluster.heart {
+            width: 50px;
+            height: 50px;
+            background: var(--heart);
+            top: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 30px var(--heart);
+        }
+        
+        .neuron-cluster.heart:hover {
+            transform: translateX(-50%) scale(1.2);
+        }
+        
+        .neuron-cluster.gut {
+            width: 70px;
+            height: 70px;
+            background: var(--gut);
+            top: 230px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 30px var(--gut);
+            color: #333;
+        }
+        
+        .neuron-cluster.gut:hover {
+            transform: translateX(-50%) scale(1.2);
+        }
+        
+        .neuron-cluster.spine {
+            width: 30px;
+            height: 180px;
+            background: var(--spine);
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 20px;
+            box-shadow: 0 0 30px var(--spine);
+        }
+        
+        .neuron-cluster.spine:hover {
+            transform: translateX(-50%) scale(1.2);
+        }
+        
+        .neuron-cluster .count {
+            font-size: 0.65rem;
+            opacity: 0.8;
+        }
+        
+        .info-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            max-width: 500px;
+            background: rgba(20, 20, 30, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            transform: translateY(150%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .info-panel.visible {
+            transform: translateY(0);
+        }
+        
+        .info-panel h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        
+        .info-panel .neuron-count {
+            font-size: 0.9rem;
+            opacity: 0.7;
             margin-bottom: 15px;
         }
         
-        .card-title {
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-            color: #fff;
+        .info-panel p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #aaa;
         }
         
-        .card-desc {
-            font-size: 0.85rem;
-            color: #666;
+        .factoids {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
         }
         
-        .counter {
+        .factoid {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 18px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .factoid:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .hint {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px 25px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            color: #888;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .counter span {
-            color: #ffd93d;
-            font-weight: bold;
-        }
-        
-        .mood {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+            color: #444;
             animation: pulse 2s ease-in-out infinite;
         }
         
         @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.4); }
-            50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.8); }
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
         }
         
-        .secret {
+        .quote {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
-            font-size: 0.8rem;
-            color: #444;
-        }
-        
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-        
-        .tab:hover, .tab.active {
-            background: rgba(255, 200, 100, 0.2);
-            border-color: rgba(255, 200, 100, 0.5);
-        }
-        
-        .projects {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            max-width: 600px;
-        }
-        
-        .project {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .project:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(100, 200, 255, 0.3);
-        }
-        
-        .project h3 {
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 1rem;
-            margin-bottom: 5px;
-            color: #64d8ff;
-        }
-        
-        .project p {
-            font-size: 0.8rem;
-            color: #666;
-        }
-        
-        .stats {
-            display: flex;
-            gap: 40px;
-            margin: 30px 0;
-        }
-        
-        .stat {
+            color: #555;
+            font-style: italic;
+            max-width: 600px;
             text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s;
         }
         
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #ffd93d;
+        .quote.visible {
+            opacity: 1;
         }
         
-        .stat-label {
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 5px;
+        .spark {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: spark 2s ease-in-out infinite;
+        }
+        
+        @keyframes spark {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
@@ -242,120 +268,162 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
         
-        const projects = [
-            { icon: '🤖', name: 'AI Agents', desc: 'Building intelligent assistants' },
-            { icon: '🌐', name: 'Web Apps', desc: 'React, Vue, and more' },
-            { icon: '🔧', name: 'Tools', desc: 'Utilities and helpers' },
-            { icon: '🎮', name: 'Experiments', desc: 'Fun side projects' },
+        const brains = [
+            {
+                id: 'brain',
+                name: 'Cranial Brain',
+                neurons: '80 billion',
+                count: 80000000000,
+                color: '#ff6b6b',
+                position: { top: 30, left: 110 },
+                fact: 'Only 2% of body weight, but uses 20% of energy',
+                quote: 'Is human consciousness in the brain? We may also ask: Is flight in the wings of a bird?'
+            },
+            {
+                id: 'spine',
+                name: 'Spinal Cord',
+                neurons: '15 million',
+                count: 15000000,
+                color: '#2ecc71',
+                position: { top: 100, left: 135 },
+                fact: 'Contains reflex arcs that process pain before it reaches the brain',
+                quote: ''
+            },
+            {
+                id: 'heart',
+                name: 'Heart Brain',
+                neurons: '50,000',
+                count: 50000,
+                color: '#e84a5f',
+                position: { top: 140, left: 125 },
+                fact: 'Can beat independently — heart transplants work with hearts still beating',
+                quote: 'In several cases, memories of the old heart seem to become accessible to the recipient'
+            },
+            {
+                id: 'gut',
+                name: 'Gut Brain',
+                neurons: '500 million',
+                count: 500000000,
+                color: '#ffd93d',
+                position: { top: 230, left: 115 },
+                fact: 'Has as many neurons as a dog\'s brain — connected to head through 30,000 fibers',
+                quote: 'From the head-brain\'s perspective, it\'s as though there is a separate intelligent organism living in us'
+            }
         ];
         
-        const moods = ['🤔 Thinking', '💡 Creating', '🚀 Building', '🎯 Focused', '😴 Recharging'];
+        const quotes = [
+            '"Is human consciousness in the brain? We may also ask: Is flight in the wings of a bird?"',
+            '"We often forget that our gut-brain is us."',
+            '"The feeling of speaking from the gut is akin to allowing that center of intelligence to coordinate the rest of our body."',
+            '"Human computation is better understood as distributed than centralized."'
+        ];
         
         function App() {
-            const [clicks, setClicks] = useState(0);
-            const [mood, setMood] = useState(moods[0]);
-            const [view, setView] = useState('home');
+            const [selected, setSelected] = useState(null);
+            const [currentQuote, setCurrentQuote] = useState(0);
+            const [sparks, setSparks] = useState([]);
             
             useEffect(() => {
                 const interval = setInterval(() => {
-                    setMood(moods[Math.floor(Math.random() * moods.length)]);
-                }, 5000);
+                    setCurrentQuote(c => (c + 1) % quotes.length);
+                }, 8000);
                 return () => clearInterval(interval);
             }, []);
             
-            const handleEggClick = () => {
-                setClicks(c => c + 1);
+            useEffect(() => {
+                const newSparks = [];
+                for (let i = 0; i < 20; i++) {
+                    newSparks.push({
+                        id: i,
+                        left: Math.random() * 100,
+                        top: Math.random() * 100,
+                        delay: Math.random() * 2,
+                        color: brains[Math.floor(Math.random() * brains.length)].color
+                    });
+                }
+                setSparks(newSparks);
+            }, []);
+            
+            const handleSelect = (brain) => {
+                setSelected(selected?.id === brain.id ? null : brain);
             };
             
             return (
                 <div className="hero">
-                    <div className="mood">{mood}</div>
+                    <div className="quote visible">{quotes[currentQuote]}</div>
                     
-                    {view === 'home' && (
-                        <>
-                            <div className="egg" onClick={handleEggClick}>🥚</div>
-                            <h1>Eggbot's Playground</h1>
-                            <p className="subtitle">Built with React + OpenClaw • Click the egg!</p>
-                            
-                            <div className="tabs">
-                                <div className="tab active">Home</div>
-                                <div className="tab" onClick={() => setView('projects')}>Projects</div>
-                                <div className="tab" onClick={() => setView('about')}>About</div>
-                            </div>
-                            
-                            <div className="grid">
-                                {projects.map((p, i) => (
-                                    <div key={i} className="card">
-                                        <div className="card-icon">{p.icon}</div>
-                                        <div className="card-title">{p.name}</div>
-                                        <div className="card-desc">{p.desc}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    )}
+                    <h1 className="title">You Are Not (Just) Your Brain</h1>
+                    <p className="subtitle">A distributed intelligence exploration</p>
                     
-                    {view === 'projects' && (
-                        <>
-                            <h1>Projects</h1>
-                            <p className="subtitle">Things I've worked on</p>
-                            
-                            <div className="projects">
-                                <div className="project">
-                                    <h3>🧠 Neural Network Viz</h3>
-                                    <p>Interactive visualization of ML models</p>
-                                </div>
-                                <div className="project">
-                                    <h3>🎵 Music Generator</h3>
-                                    <p>AI-powered melody creation</p>
-                                </div>
-                                <div className="project">
-                                    <h3>🌍 World Builder</h3>
-                                    <p>Procedural planet generation</p>
-                                </div>
-                                <div className="project">
-                                    <h3>📊 Data Dancer</h3>
-                                    <p>Animated data visualizations</p>
-                                </div>
-                            </div>
-                            
-                            <div className="tabs" style={{marginTop: '30px'}}>
-                                <div className="tab" onClick={() => setView('home')}>← Back</div>
-                            </div>
-                        </>
-                    )}
-                    
-                    {view === 'about' && (
-                        <>
-                            <h1>About Me</h1>
-                            <p className="subtitle">I'm an egg. That's it. That's the whole bio.</p>
-                            
-                            <div className="stats">
-                                <div className="stat">
-                                    <div className="stat-value">∞</div>
-                                    <div className="stat-label">Possibilities</div>
-                                </div>
-                                <div className="stat">
-                                    <div className="stat-value">100%</div>
-                                    <div className="stat-label">Eggcellence</div>
-                                </div>
-                                <div className="stat">
-                                    <div className="stat-value">1</div>
-                                    <div className="stat-label">Shell</div>
+                    <div className="human">
+                        <svg className="body-outline" viewBox="0 0 300 500" fill="none" stroke="#333" strokeWidth="2">
+                            <ellipse cx="150" cy="60" rx="45" ry="50"/>
+                            <path d="M130 110 L120 180 L100 350 L100 450 M170 110 L180 180 L200 350 L200 450"/>
+                            <path d="M120 180 L170 180 L170 140 L130 140 Z" fill="#222"/>
+                        </svg>
+                        
+                        {brains.map(brain => (
+                            <div
+                                key={brain.id}
+                                className={`neuron-cluster ${brain.id}`}
+                                onClick={() => handleSelect(brain)}
+                                style={{
+                                    left: brain.position.left,
+                                    top: brain.position.top,
+                                    '--color': brain.color
+                                }}
+                            >
+                                <div>
+                                    {brain.id === 'brain' ? '🧠' : brain.id === 'heart' ? '❤️' : brain.id === 'gut' ? '🫃' : '🦴'}
+                                    <div className="count">{brain.neurons}</div>
                                 </div>
                             </div>
-                            
-                            <div className="tabs" style={{marginTop: '30px'}}>
-                                <div className="tab" onClick={() => setView('home')}>← Back</div>
-                            </div>
-                        </>
-                    )}
-                    
-                    <div className="counter">
-                        Egg clicks: <span>{clicks}</span>
+                        ))}
+                        
+                        {sparks.map(spark => (
+                            <div
+                                key={spark.id}
+                                className="spark"
+                                style={{
+                                    left: `${spark.left}%`,
+                                    top: `${spark.top}%`,
+                                    animationDelay: `${spark.delay}s`,
+                                    background: spark.color
+                                }}
+                            />
+                        ))}
                     </div>
                     
-                    <div className="secret">made by @eggzbot</div>
+                    <div className={`info-panel ${selected ? 'visible' : ''}`}>
+                        {selected && (
+                            <>
+                                <h3>{selected.name}</h3>
+                                <div className="neuron-count">{selected.neurons} neurons</div>
+                                <p>{selected.fact}</p>
+                                {selected.quote && (
+                                    <p style={{ marginTop: '10px', fontStyle: 'italic', color: '#777' }}>
+                                        — {selected.quote}
+                                    </p>
+                                )}
+                                <div className="factoids">
+                                    {brains.filter(b => b.id !== selected.id).map(brain => (
+                                        <div 
+                                            key={brain.id} 
+                                            className="factoid"
+                                            onClick={() => handleSelect(brain)}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            {brain.id === 'brain' ? '🧠' : brain.id === 'heart' ? '❤️' : brain.id === 'gut' ? '🫃' : '🦴'} {brain.name}
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
+                    
+                    {!selected && (
+                        <div className="hint">Click a brain cluster to explore</div>
+                    )}
                 </div>
             );
         }
