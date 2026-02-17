@@ -3,474 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
     <title>The Distributed Brain</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --brain: #ff6b6b;
-            --gut: #ffd93d;
-            --heart: #e84a5f;
-            --spine: #2ecc71;
-            --bg: #0a0a0f;
-            --text: #e8e8e8;
+            --brain: #ff6b6b; --gut: #ffd93d; --heart: #e84a5f;
+            --spine: #2ecc71; --skin: #74b9ff; --hands: #a29bfe;
+            --bg: #06060a; --text: #e8e8e8; --accent: #00d2d3;
         }
-        
         body {
-            font-family: 'Courier New', monospace;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg); color: var(--text); min-height: 100vh;
         }
+        #root { min-height: 100vh; }
+        .app { min-height: 100vh; background: radial-gradient(ellipse at 30% 20%, rgba(255,107,107,0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255,217,61,0.06) 0%, transparent 50%), var(--bg); }
         
-        #root {
-            min-height: 100vh;
-        }
+        .header { position: fixed; top: 0; left: 0; right: 0; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(6,6,10,0.9); backdrop-filter: blur(20px); z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .logo { font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .logo-icon { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--brain), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .controls { display: flex; gap: 10px; }
+        .icon-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.3s; }
+        .icon-btn:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); }
         
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            background: 
-                radial-gradient(ellipse at 50% 0%, rgba(255, 107, 107, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 20% 80%, rgba(255, 217, 61, 0.1) 0%, transparent 40%),
-                radial-gradient(ellipse at 80% 60%, rgba(232, 74, 95, 0.1) 0%, transparent 40%),
-                linear-gradient(180deg, #0a0a0f 0%, #0f0f18 100%);
-        }
+        .nav-tabs { display: flex; gap: 5px; padding: 70px 15px 15px; overflow-x: auto; }
+        .nav-tab { padding: 10px 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 25px; font-size: 0.85rem; color: var(--text); white-space: nowrap; cursor: pointer; transition: all 0.3s; }
+        .nav-tab:hover, .nav-tab.active { background: rgba(0,210,211,0.15); border-color: var(--accent); }
+        .nav-tab.active { color: var(--accent); }
         
-        .title {
-            font-size: clamp(2rem, 8vw, 4rem);
-            font-weight: 300;
-            text-align: center;
-            margin-bottom: 15px;
-            letter-spacing: 0.05em;
-            padding: 0 20px;
-        }
+        .main-content { padding: 20px; padding-bottom: 100px; }
         
-        .subtitle {
-            font-size: clamp(0.9rem, 3vw, 1.2rem);
-            color: #666;
-            margin-bottom: 30px;
-            font-style: italic;
-            padding: 0 20px;
-        }
+        .explore-view { display: flex; flex-direction: column; align-items: center; }
+        .human-container { position: relative; width: clamp(200px, 70vw, 320px); height: clamp(380px, 90vw, 520px); margin: 20px 0; }
+        .human-svg { width: 100%; height: 100%; }
         
-        .human {
-            position: relative;
-            width: clamp(180px, 60vw, 300px);
-            height: clamp(300px, 80vw, 500px);
-            margin: 20px 0;
-        }
+        .neural-node { position: absolute; border-radius: 50%; cursor: pointer; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); display: flex; align-items: center; justify-content: center; font-weight: 600; animation: pulse-glow 3s ease-in-out infinite; }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px currentColor; } 50% { box-shadow: 0 0 40px currentColor; } }
+        .neural-node:hover, .neural-node:active { transform: scale(1.2) !important; z-index: 10; }
+        .neural-node .emoji { font-size: clamp(1.2rem, 4vw, 1.6rem); }
         
-        .body-outline {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0.15;
-        }
+        .insight-box { background: linear-gradient(135deg, rgba(0,210,211,0.1), rgba(255,107,107,0.1)); border: 1px solid rgba(0,210,211,0.2); border-radius: 12px; padding: 15px; margin-top: 20px; font-size: 0.9rem; line-height: 1.6; }
         
-        .neuron-cluster {
-            position: absolute;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.7rem;
-            text-align: center;
-            line-height: 1.2;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
+        .data-view { max-width: 600px; margin: 0 auto; }
+        .data-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; margin-bottom: 15px; }
+        .data-card h3 { font-size: 1rem; margin-bottom: 10px; color: var(--accent); }
+        .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .stat-row:last-child { border: none; }
+        .stat-label { opacity: 0.7; }
+        .stat-value { font-weight: 600; }
         
-        .neuron-cluster:hover, .neuron-cluster:active {
-            transform: scale(1.15);
-            z-index: 10;
-        }
+        .feelings-view { text-align: center; padding: 20px 0; }
+        .feelings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 400px; margin: 20px auto; }
+        .feeling-btn { padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; font-size: 1.5rem; cursor: pointer; transition: all 0.3s; }
+        .feeling-btn:hover { background: rgba(255,255,255,0.08); transform: translateY(-3px); }
+        .feeling-label { display: block; font-size: 0.8rem; margin-top: 5px; opacity: 0.7; }
         
-        .neuron-cluster.brain {
-            width: clamp(50px, 18vw, 80px);
-            height: clamp(50px, 18vw, 80px);
-            background: var(--brain);
-            top: clamp(15px, 5vw, 30px);
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 40px var(--brain);
-        }
+        .quiz-view { max-width: 500px; margin: 0 auto; text-align: center; }
+        .quiz-question { font-size: 1.3rem; margin-bottom: 30px; line-height: 1.5; }
+        .quiz-options { display: flex; flex-direction: column; gap: 12px; }
+        .quiz-option { padding: 18px 25px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; text-align: left; cursor: pointer; transition: all 0.3s; font-size: 0.95rem; }
+        .quiz-option:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+        .quiz-option.correct { background: rgba(46,204,113,0.2); border-color: #2ecc71; }
+        .quiz-option.wrong { background: rgba(231,76,60,0.2); border-color: #e74c3c; }
+        .quiz-score { font-size: 2rem; margin-bottom: 20px; }
         
-        .neuron-cluster.brain:hover, .neuron-cluster.brain:active {
-            transform: translateX(-50%) scale(1.15);
-        }
+        .about-view { max-width: 600px; margin: 0 auto; line-height: 1.8; }
+        .about-view h2 { font-size: 1.5rem; margin-bottom: 15px; color: var(--accent); }
+        .about-view p { margin-bottom: 15px; opacity: 0.85; }
+        .sources { margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px; }
+        .sources h4 { margin-bottom: 10px; opacity: 0.7; }
+        .sources a { display: block; color: var(--accent); text-decoration: none; font-size: 0.85rem; margin: 5px 0; opacity: 0.8; }
         
-        .neuron-cluster.heart {
-            width: clamp(32px, 10vw, 50px);
-            height: clamp(32px, 10vw, 50px);
-            background: var(--heart);
-            top: clamp(85px, 25vw, 140px);
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 30px var(--heart);
-        }
+        .info-drawer { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,15,0.98); border-radius: 24px 24px 0 0; padding: 25px; max-height: 70vh; overflow-y: auto; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); z-index: 200; border: 1px solid rgba(255,255,255,0.1); }
+        .info-drawer.visible { transform: translateY(0); }
+        .drawer-handle { width: 40px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 15px; }
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .drawer-title { font-size: 1.3rem; font-weight: 600; }
+        .drawer-close { width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: #fff; font-size: 18px; cursor: pointer; }
+        .drawer-content { line-height: 1.7; opacity: 0.9; }
+        .drawer-content strong { color: var(--accent); }
+        .fact-list { margin-top: 15px; }
+        .fact-item { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: flex-start; gap: 10px; }
+        .fact-item:last-child { border: none; }
+        .fact-bullet { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-top: 6px; flex-shrink: 0; }
         
-        .neuron-cluster.heart:hover, .neuron-cluster.heart:active {
-            transform: translateX(-50%) scale(1.15);
-        }
-        
-        .neuron-cluster.gut {
-            width: clamp(45px, 15vw, 70px);
-            height: clamp(45px, 15vw, 70px);
-            background: var(--gut);
-            top: clamp(145px, 42vw, 230px);
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 30px var(--gut);
-            color: #333;
-        }
-        
-        .neuron-cluster.gut:hover, .neuron-cluster.gut:active {
-            transform: translateX(-50%) scale(1.15);
-        }
-        
-        .neuron-cluster.spine {
-            width: clamp(18px, 6vw, 30px);
-            height: clamp(110px, 38vw, 180px);
-            background: var(--spine);
-            top: clamp(60px, 18vw, 100px);
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: clamp(10px, 4vw, 20px);
-            box-shadow: 0 0 30px var(--spine);
-        }
-        
-        .neuron-cluster.spine:hover, .neuron-cluster.spine:active {
-            transform: translateX(-50%) scale(1.15);
-        }
-        
-        .neuron-cluster .count {
-            font-size: 0.65rem;
-            opacity: 0.8;
-        }
-        
-        .info-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            max-width: 100%;
-            background: rgba(20, 20, 30, 0.98);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px 20px 0 0;
-            padding: 25px;
-            backdrop-filter: blur(20px);
-            transform: translateY(110%);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            max-height: 60vh;
-            overflow-y: auto;
-            z-index: 100;
-        }
-        
-        .info-panel.visible {
-            transform: translateY(0);
-        }
-        
-        .info-panel h3 {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-        }
-        
-        .info-panel .neuron-count {
-            font-size: 0.9rem;
-            opacity: 0.7;
-            margin-bottom: 15px;
-        }
-        
-        .info-panel p {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: #aaa;
-        }
-        
-        .factoids {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .factoid {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px 14px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s;
-        }
-        
-        .factoid:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .hint {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            font-size: 0.75rem;
-            color: #444;
-            animation: pulse 2s ease-in-out infinite;
-            text-align: center;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.8; }
-        }
-        
-        .quote {
-            position: relative;
-            font-size: clamp(0.85rem, 3vw, 1rem);
-            color: #555;
-            font-style: italic;
-            max-width: clamp(280px, 90vw, 600px);
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.5s;
-            padding: 0 20px;
-            margin-bottom: 10px;
-        }
-        
-        .quote.visible {
-            opacity: 1;
-        }
+        .emoji-float { position: fixed; font-size: 2rem; animation: float-up 2s ease-out forwards; pointer-events: none; z-index: 1000; }
+        @keyframes float-up { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-100px) scale(0.5); } }
         
         @media (max-width: 480px) {
-            .hero {
-                padding-bottom: 40px;
-            }
-            .info-panel {
-                padding: 20px;
-            }
-            .factoids {
-                gap: 8px;
-            }
-            .factoid {
-                padding: 8px 12px;
-                font-size: 0.7rem;
-            }
-        }
-        
-        .spark {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            animation: spark 2s ease-in-out infinite;
-        }
-        
-        @keyframes spark {
-            0%, 100% { opacity: 0; transform: scale(0); }
-            50% { opacity: 1; transform: scale(1); }
+            .nav-tab { padding: 8px 14px; font-size: 0.75rem; }
+            .data-card { padding: 15px; }
         }
     </style>
 </head>
 <body>
     <div id="root"></div>
-    
     <script type="text/babel">
         const { useState, useEffect } = React;
         
-        const brains = [
-            {
-                id: 'brain',
-                name: 'Cranial Brain',
-                neurons: '80 billion',
-                count: 80000000000,
-                color: '#ff6b6b',
-                position: { top: 30, left: 110 },
-                fact: 'Only 2% of body weight, but uses 20% of energy',
-                quote: 'Is human consciousness in the brain? We may also ask: Is flight in the wings of a bird?'
-            },
-            {
-                id: 'spine',
-                name: 'Spinal Cord',
-                neurons: '15 million',
-                count: 15000000,
-                color: '#2ecc71',
-                position: { top: 100, left: 135 },
-                fact: 'Contains reflex arcs that process pain before it reaches the brain',
-                quote: ''
-            },
-            {
-                id: 'heart',
-                name: 'Heart Brain',
-                neurons: '50,000',
-                count: 50000,
-                color: '#e84a5f',
-                position: { top: 140, left: 125 },
-                fact: 'Can beat independently — heart transplants work with hearts still beating',
-                quote: 'In several cases, memories of the old heart seem to become accessible to the recipient'
-            },
-            {
-                id: 'gut',
-                name: 'Gut Brain',
-                neurons: '500 million',
-                count: 500000000,
-                color: '#ffd93d',
-                position: { top: 230, left: 115 },
-                fact: 'Has as many neurons as a dog\'s brain — connected to head through 30,000 fibers',
-                quote: 'From the head-brain\'s perspective, it\'s as though there is a separate intelligent organism living in us'
-            }
+        const neuralSystems = [
+            { id: 'brain', name: 'Cranial Brain', emoji: '🧠', neurons: '80B', color: '#ff6b6b', position: { top: '8%', left: '50%' }, facts: ['Uses 20% of body energy despite being 2% of weight', 'Contains ~86 billion neurons', 'Generates ~25 watts while awake', 'Processes 70,000 thoughts per day'], description: 'Your head brain is the command center, but only one part of a much larger network.' },
+            { id: 'heart', name: 'Heart Brain', emoji: '❤️', neurons: '40K', color: '#e84a5f', position: { top: '28%', left: '50%' }, facts: ['Can operate independently after transplant', 'Has its own nervous system', 'Produces hormones that regulate blood pressure', 'Communicates with the brain via the vagus nerve'], description: 'The heart has often been called the "little brain" with complex neural networks.' },
+            { id: 'gut', name: 'Gut Brain', emoji: '🫃', neurons: '500M', color: '#ffd93d', position: { top: '45%', left: '50%' }, facts: ['Contains as many neurons as a dog\'s brain', 'Produces 95% of the body\'s serotonin', 'Communicates with the brain via the vagus nerve', 'Has its own immune system'], description: 'Your gut is often called the "second brain" and can function independently.' },
+            { id: 'spine', name: 'Spinal Cord', emoji: '🦴', neurons: '15M', color: '#2ecc71', position: { top: '22%', left: '50%' }, facts: ['Contains reflex arcs that process pain locally', 'The dorsal horn acts as a "pain gate"', 'Can process signals before they reach the brain', 'Contains interneurons for local coordination'], description: 'Your spine processes many signals locally, acting as a preprocessing hub.' },
+            { id: 'skin', name: 'Skin Brain', emoji: '🖐️', neurons: '1M', color: '#74b9ff', position: { top: '35%', left: '15%' }, facts: ['Contains millions of sensory neurons', 'Can "remember" sensations', 'Sends independent signals to the brain', 'Acts as a protective neural network'], description: 'Your skin has its own neural network for touch processing.' },
+            { id: 'hands', name: 'Hand Intelligence', emoji: '✋', neurons: '300K', color: '#a29bfe', position: { top: '48%', left: '10%' }, facts: ['More neural representation than any other body part', 'Contains complex proprioceptive sensors', 'Can perform complex tasks without brain input', 'Has dedicated motor and sensory cortices'], description: 'Your hands have specialized neural networks for fine motor control.' }
         ];
         
-        const quotes = [
-            '"Is human consciousness in the brain? We may also ask: Is flight in the wings of a bird?"',
-            '"We often forget that our gut-brain is us."',
-            '"The feeling of speaking from the gut is akin to allowing that center of intelligence to coordinate the rest of our body."',
-            '"Human computation is better understood as distributed than centralized."'
+        const quizQuestions = [
+            { question: 'How many neurons does the gut brain have?', options: ['1 million', '100 million', '500 million', '5 billion'], correct: 2, explanation: 'The gut contains about 500 million neurons - roughly equal to a dog\'s brain!' },
+            { question: 'What percentage of serotonin is produced in the gut?', options: ['25%', '50%', '75%', '95%'], correct: 3, explanation: 'The gut produces about 95% of the body\'s serotonin, the "happiness" hormone.' },
+            { question: 'Can the heart beat independently of the brain?', options: ['No, never', 'Only in emergencies', 'Yes, it has its own nervous system', 'Only in infants'], correct: 2, explanation: 'The heart has its own nervous system and can continue beating after transplant!' },
+            { question: 'What percentage of the body\'s energy does the brain use?', options: ['5%', '10%', '20%', '40%'], correct: 2, explanation: 'Despite being only 2% of body weight, the brain uses about 20% of energy.' }
+        ];
+        
+        const feelings = [
+            { emoji: '😰', label: 'Anxiety' }, { emoji: '😢', label: 'Sadness' },
+            { emoji: '❤️', label: 'Love' }, { emoji: '🤢', label: 'Disgust' },
+            { emoji: '💪', label: 'Confidence' }, { emoji: '😴', label: 'Tired' }
+        ];
+        
+        const insights = [
+            'Your "gut feeling" is literally your second brain talking to you.',
+            'The heart sends more signals to the brain than the brain sends to the heart.',
+            'Your skin remembers touches - neural pathways can last years.',
+            'Many decisions your "head brain" makes are actually influenced by your gut.',
+            'The spinal cord can override pain signals before they reach your brain.',
         ];
         
         function App() {
+            const [view, setView] = useState('explore');
             const [selected, setSelected] = useState(null);
-            const [currentQuote, setCurrentQuote] = useState(0);
-            const [sparks, setSparks] = useState([]);
+            const [quizScore, setQuizScore] = useState(0);
+            const [quizQuestion, setQuizQuestion] = useState(0);
+            const [quizAnswer, setQuizAnswer] = useState(null);
+            const [feelingsLog, setFeelingsLog] = useState([]);
+            const [currentInsight, setCurrentInsight] = useState(0);
             
             useEffect(() => {
-                const interval = setInterval(() => {
-                    setCurrentQuote(c => (c + 1) % quotes.length);
-                }, 8000);
+                const interval = setInterval(() => setCurrentInsight(i => (i + 1) % insights.length), 10000);
                 return () => clearInterval(interval);
             }, []);
             
-            useEffect(() => {
-                const newSparks = [];
-                for (let i = 0; i < 20; i++) {
-                    newSparks.push({
-                        id: i,
-                        left: Math.random() * 100,
-                        top: Math.random() * 100,
-                        delay: Math.random() * 2,
-                        color: brains[Math.floor(Math.random() * brains.length)].color
-                    });
-                }
-                setSparks(newSparks);
-            }, []);
+            const handleSelect = (system) => setSelected(selected?.id === system.id ? null : system);
             
-            const handleSelect = (brain) => {
-                setSelected(selected?.id === brain.id ? null : brain);
+            const handleQuizAnswer = (index) => {
+                setQuizAnswer(index);
+                if (index === quizQuestions[quizQuestion].correct) setQuizScore(s => s + 1);
+                setTimeout(() => { setQuizAnswer(null); setQuizQuestion(q => (q + 1) % quizQuestions.length); }, 2000);
+            };
+            
+            const addFeeling = (feeling) => {
+                const newLog = [...feelingsLog, { ...feeling, time: Date.now() }];
+                setFeelingsLog(newLog.slice(-10));
+                const emoji = document.createElement('div');
+                emoji.className = 'emoji-float';
+                emoji.textContent = feeling.emoji;
+                emoji.style.left = '50%';
+                emoji.style.top = '50%';
+                document.body.appendChild(emoji);
+                setTimeout(() => emoji.remove(), 2000);
             };
             
             return (
-                <div className="hero">
-                    <div className="quote visible">{quotes[currentQuote]}</div>
+                <div className="app">
+                    <header className="header">
+                        <div className="logo"><div className="logo-icon">🧠</div><span>Distributed Brain</span></div>
+                        <div className="controls">
+                            <button className="icon-btn">🔇</button>
+                            <button className="icon-btn">🌙</button>
+                        </div>
+                    </header>
                     
-                    <h1 className="title">You Are Not (Just) Your Brain</h1>
-                    <p className="subtitle">A distributed intelligence exploration</p>
-                    
-                    <div className="human">
-                        <svg className="body-outline" viewBox="0 0 300 500" fill="none" stroke="#333" strokeWidth="2">
-                            <ellipse cx="150" cy="60" rx="45" ry="50"/>
-                            <path d="M130 110 L120 180 L100 350 L100 450 M170 110 L180 180 L200 350 L200 450"/>
-                            <path d="M120 180 L170 180 L170 140 L130 140 Z" fill="#222"/>
-                        </svg>
-                        
-                        {brains.map(brain => (
-                            <div
-                                key={brain.id}
-                                className={`neuron-cluster ${brain.id}`}
-                                onClick={() => handleSelect(brain)}
-                                style={{
-                                    left: brain.position.left,
-                                    top: brain.position.top,
-                                    '--color': brain.color
-                                }}
-                            >
-                                <div>
-                                    {brain.id === 'brain' ? '🧠' : brain.id === 'heart' ? '❤️' : brain.id === 'gut' ? '🫃' : '🦴'}
-                                    <div className="count">{brain.neurons}</div>
-                                </div>
+                    <nav className="nav-tabs">
+                        {['explore', 'data', 'feelings', 'quiz', 'about'].map(tab => (
+                            <div key={tab} className={`nav-tab ${view === tab ? 'active' : ''}`} onClick={() => setView(tab)}>
+                                {tab.charAt(0).toUpperCase() + tab.slice(1)}
                             </div>
                         ))}
-                        
-                        {sparks.map(spark => (
-                            <div
-                                key={spark.id}
-                                className="spark"
-                                style={{
-                                    left: `${spark.left}%`,
-                                    top: `${spark.top}%`,
-                                    animationDelay: `${spark.delay}s`,
-                                    background: spark.color
-                                }}
-                            />
-                        ))}
-                    </div>
+                    </nav>
                     
-                    <div className={`info-panel ${selected ? 'visible' : ''}`}>
-                        {selected && (
-                            <>
-                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px'}}>
-                                    <h3>{selected.name}</h3>
-                                    <button 
-                                        onClick={(e) => { e.stopPropagation(); setSelected(null); }}
-                                        style={{
-                                            background: 'rgba(255,255,255,0.1)',
-                                            border: 'none',
-                                            color: '#fff',
-                                            width: '32px',
-                                            height: '32px',
-                                            borderRadius: '50%',
-                                            cursor: 'pointer',
-                                            fontSize: '18px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
-                                        }}
-                                    >✕</button>
-                                </div>
-                                <div className="neuron-count">{selected.neurons} neurons</div>
-                                <p>{selected.fact}</p>
-                                {selected.quote && (
-                                    <p style={{ marginTop: '10px', fontStyle: 'italic', color: '#777' }}>
-                                        — {selected.quote}
-                                    </p>
-                                )}
-                                <div className="factoids">
-                                    {brains.filter(b => b.id !== selected.id).map(brain => (
-                                        <div 
-                                            key={brain.id} 
-                                            className="factoid"
-                                            onClick={() => handleSelect(brain)}
-                                            style={{ cursor: 'pointer' }}
-                                        >
-                                            {brain.id === 'brain' ? '🧠' : brain.id === 'heart' ? '❤️' : brain.id === 'gut' ? '🫃' : '🦴'} {brain.name}
+                    <main className="main-content">
+                        {view === 'explore' && (
+                            <div className="explore-view">
+                                <div className="human-container">
+                                    <svg className="human-svg" viewBox="0 0 200 350">
+                                        <defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="rgba(255,255,255,0.08)" /><stop offset="100%" stopColor="rgba(255,255,255,0.02)" /></linearGradient></defs>
+                                        <ellipse cx="100" cy="35" rx="30" ry="35" fill="url(#g)" />
+                                        <path d="M85 70 L80 120 L60 220 L55 320 M115 70 L120 120 L140 220 L145 320" stroke="rgba(255,255,255,0.1)" strokeWidth="20" fill="none" strokeLinecap="round"/>
+                                    </svg>
+                                    {neuralSystems.map(system => (
+                                        <div key={system.id} className="neural-node" onClick={() => handleSelect(system)}
+                                            style={{ top: system.position.top, left: system.position.left, transform: 'translate(-50%, -50%)', width: system.id === 'spine' ? 'clamp(20px,6vw,30px)' : 'clamp(40px,12vw,60px)', height: system.id === 'spine' ? 'clamp(60px,18vw,100px)' : 'clamp(40px,12vw,60px)', background: system.color, color: system.color, borderRadius: system.id === 'spine' ? '15px' : '50%' }}>
+                                            <span className="emoji">{system.emoji}</span>
                                         </div>
                                     ))}
                                 </div>
-                            </>
+                                <div className="insight-box">💡 {insights[currentInsight]}</div>
+                            </div>
                         )}
-                    </div>
+                        
+                        {view === 'data' && (
+                            <div className="data-view">
+                                <div className="data-card"><h3>🧠 Neural Statistics</h3>
+                                    {neuralSystems.map(s => <div key={s.id} className="stat-row"><span className="stat-label">{s.name}</span><span className="stat-value" style={{color: s.color}}>{s.neurons}</span></div>)}
+                                </div>
+                                <div className="data-card"><h3>⚡ Energy & Stats</h3>
+                                    <div className="stat-row"><span className="stat-label">Brain energy use</span><span className="stat-value">20%</span></div>
+                                    <div className="stat-row"><span className="stat-label">Brain weight</span><span className="stat-value">2%</span></div>
+                                    <div className="stat-row"><span className="stat-label">Serotonin from gut</span><span className="stat-value">95%</span></div>
+                                    <div className="stat-row"><span className="stat-label">Feelings logged</span><span className="stat-value">{feelingsLog.length}</span></div>
+                                    <div className="stat-row"><span className="stat-label">Quiz score</span><span className="stat-value">{quizScore}</span></div>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {view === 'feelings' && (
+                            <div className="feelings-view">
+                                <p>Tap an emotion to log it:</p>
+                                <div className="feelings-grid">
+                                    {feelings.map((f, i) => <button key={i} className="feeling-btn" onClick={() => addFeeling(f)}>{f.emoji}<span className="feeling-label">{f.label}</span></button>)}
+                                </div>
+                                {feelingsLog.length > 0 && <div className="data-card" style={{marginTop: '20px', textAlign: 'left'}}><h3>📝 Recent</h3>{feelingsLog.slice(-5).reverse().map((l, i) => <div key={i} style={{padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.05)'}}>{l.emoji} {l.label}</div>)}</div>}
+                            </div>
+                        )}
+                        
+                        {view === 'quiz' && (
+                            <div className="quiz-view">
+                                <div className="quiz-score">{quizScore} / {quizQuestion + (quizAnswer !== null ? 1 : 0)}</div>
+                                <div className="quiz-question">{quizQuestions[quizQuestion].question}</div>
+                                <div className="quiz-options">
+                                    {quizQuestions[quizQuestion].options.map((o, i) => (
+                                        <div key={i} className={`quiz-option ${quizAnswer !== null ? (i === quizQuestions[quizQuestion].correct ? 'correct' : i === quizAnswer ? 'wrong' : '') : ''}`} onClick={() => quizAnswer === null && handleQuizAnswer(i)}>{o}</div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        
+                        {view === 'about' && (
+                            <div className="about-view">
+                                <h2>The Distributed Brain</h2>
+                                <p>For centuries, we've believed our brain is the sole seat of consciousness. But research reveals a more complex picture: the body is a network of distributed intelligences.</p>
+                                <p>The "second brain" in our gut contains hundreds of millions of neurons—roughly equivalent to a dog's brain. It communicates with our cranial brain through the vagus nerve.</p>
+                                <p>The heart has its own neural network and can operate independently after transplant. Some researchers believe it may store emotional memories.</p>
+                                <div className="sources">
+                                    <h4>📚 Sources</h4>
+                                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4367209/" target="_blank">The Enteric Nervous System</a>
+                                    <a href="https://www.ahajournals.org/doi/10.1161/CIRCRESAHA.116.304931" target="_blank">The Heart-Brain Connection</a>
+                                </div>
+                            </div>
+                        )}
+                    </main>
                     
-                    {!selected && (
-                        <div className="hint">Click a brain cluster to explore</div>
+                    {selected && (
+                        <div className="info-drawer visible">
+                            <div className="drawer-handle" onClick={() => setSelected(null)}></div>
+                            <div className="drawer-header">
+                                <div><span style={{fontSize: '2rem', marginRight: '10px'}}>{selected.emoji}</span><span className="drawer-title">{selected.name}</span></div>
+                                <button className="drawer-close" onClick={() => setSelected(null)}>✕</button>
+                            </div>
+                            <div className="drawer-content">
+                                <p>{selected.description}</p>
+                                <p style={{marginTop: '10px', opacity: 0.7}}><strong>{selected.neurons}</strong> neurons</p>
+                                <div className="fact-list">
+                                    {selected.facts.map((fact, i) => (
+                                        <div key={i} className="fact-item"><div className="fact-bullet"></div><div>{fact}</div></div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     )}
                 </div>
             );
         }
-        
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
