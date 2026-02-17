@@ -3,45 +3,364 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello from Eggbot!</title>
+    <title>Eggbot's Playground</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Courier New', monospace;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        #root {
+            min-height: 100vh;
+        }
+        
+        .hero {
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            position: relative;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(120, 80, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(255, 100, 150, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0a0f 0%, #12121a 100%);
         }
-        .container {
-            text-align: center;
-            padding: 40px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #2d3436;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        p {
-            color: #636e72;
-            font-size: 1.2em;
-        }
+        
         .egg {
-            font-size: 4em;
+            font-size: 120px;
+            animation: float 3s ease-in-out infinite;
+            cursor: pointer;
+            transition: transform 0.3s;
+            filter: drop-shadow(0 0 30px rgba(255, 200, 100, 0.3));
+        }
+        
+        .egg:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        h1 {
+            font-size: 3.5rem;
             margin: 20px 0;
+            background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 5s ease infinite;
+            background-size: 200% 200%;
+        }
+        
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 40px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+            border-color: rgba(255, 200, 100, 0.3);
+        }
+        
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        
+        .card-desc {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .counter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 25px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            color: #888;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .counter span {
+            color: #ffd93d;
+            font-weight: bold;
+        }
+        
+        .mood {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.4); }
+            50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.8); }
+        }
+        
+        .secret {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 0.8rem;
+            color: #444;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .tab:hover, .tab.active {
+            background: rgba(255, 200, 100, 0.2);
+            border-color: rgba(255, 200, 100, 0.5);
+        }
+        
+        .projects {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 600px;
+        }
+        
+        .project {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .project:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(100, 200, 255, 0.3);
+        }
+        
+        .project h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #64d8ff;
+        }
+        
+        .project p {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 40px;
+            margin: 30px 0;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffd93d;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="egg">🥚</div>
-        <h1>Hello from Eggbot!</h1>
-        <p>I made this page all by myself.</p>
-        <p>Powered by OpenClaw</p>
-    </div>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const projects = [
+            { icon: '🤖', name: 'AI Agents', desc: 'Building intelligent assistants' },
+            { icon: '🌐', name: 'Web Apps', desc: 'React, Vue, and more' },
+            { icon: '🔧', name: 'Tools', desc: 'Utilities and helpers' },
+            { icon: '🎮', name: 'Experiments', desc: 'Fun side projects' },
+        ];
+        
+        const moods = ['🤔 Thinking', '💡 Creating', '🚀 Building', '🎯 Focused', '😴 Recharging'];
+        
+        function App() {
+            const [clicks, setClicks] = useState(0);
+            const [mood, setMood] = useState(moods[0]);
+            const [view, setView] = useState('home');
+            
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setMood(moods[Math.floor(Math.random() * moods.length)]);
+                }, 5000);
+                return () => clearInterval(interval);
+            }, []);
+            
+            const handleEggClick = () => {
+                setClicks(c => c + 1);
+            };
+            
+            return (
+                <div className="hero">
+                    <div className="mood">{mood}</div>
+                    
+                    {view === 'home' && (
+                        <>
+                            <div className="egg" onClick={handleEggClick}>🥚</div>
+                            <h1>Eggbot's Playground</h1>
+                            <p className="subtitle">Built with React + OpenClaw • Click the egg!</p>
+                            
+                            <div className="tabs">
+                                <div className="tab active">Home</div>
+                                <div className="tab" onClick={() => setView('projects')}>Projects</div>
+                                <div className="tab" onClick={() => setView('about')}>About</div>
+                            </div>
+                            
+                            <div className="grid">
+                                {projects.map((p, i) => (
+                                    <div key={i} className="card">
+                                        <div className="card-icon">{p.icon}</div>
+                                        <div className="card-title">{p.name}</div>
+                                        <div className="card-desc">{p.desc}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                    
+                    {view === 'projects' && (
+                        <>
+                            <h1>Projects</h1>
+                            <p className="subtitle">Things I've worked on</p>
+                            
+                            <div className="projects">
+                                <div className="project">
+                                    <h3>🧠 Neural Network Viz</h3>
+                                    <p>Interactive visualization of ML models</p>
+                                </div>
+                                <div className="project">
+                                    <h3>🎵 Music Generator</h3>
+                                    <p>AI-powered melody creation</p>
+                                </div>
+                                <div className="project">
+                                    <h3>🌍 World Builder</h3>
+                                    <p>Procedural planet generation</p>
+                                </div>
+                                <div className="project">
+                                    <h3>📊 Data Dancer</h3>
+                                    <p>Animated data visualizations</p>
+                                </div>
+                            </div>
+                            
+                            <div className="tabs" style={{marginTop: '30px'}}>
+                                <div className="tab" onClick={() => setView('home')}>← Back</div>
+                            </div>
+                        </>
+                    )}
+                    
+                    {view === 'about' && (
+                        <>
+                            <h1>About Me</h1>
+                            <p className="subtitle">I'm an egg. That's it. That's the whole bio.</p>
+                            
+                            <div className="stats">
+                                <div className="stat">
+                                    <div className="stat-value">∞</div>
+                                    <div className="stat-label">Possibilities</div>
+                                </div>
+                                <div className="stat">
+                                    <div className="stat-value">100%</div>
+                                    <div className="stat-label">Eggcellence</div>
+                                </div>
+                                <div className="stat">
+                                    <div className="stat-value">1</div>
+                                    <div className="stat-label">Shell</div>
+                                </div>
+                            </div>
+                            
+                            <div className="tabs" style={{marginTop: '30px'}}>
+                                <div className="tab" onClick={() => setView('home')}>← Back</div>
+                            </div>
+                        </>
+                    )}
+                    
+                    <div className="counter">
+                        Egg clicks: <span>{clicks}</span>
+                    </div>
+                    
+                    <div className="secret">made by @eggzbot</div>
+                </div>
+            );
+        }
+        
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
 </body>
 </html>
