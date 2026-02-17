@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>The Distributed Brain</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
@@ -50,25 +52,27 @@
         }
         
         .title {
-            font-size: 4rem;
+            font-size: clamp(2rem, 8vw, 4rem);
             font-weight: 300;
             text-align: center;
-            margin-bottom: 20px;
-            letter-spacing: 0.1em;
+            margin-bottom: 15px;
+            letter-spacing: 0.05em;
+            padding: 0 20px;
         }
         
         .subtitle {
-            font-size: 1.2rem;
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
             color: #666;
-            margin-bottom: 60px;
+            margin-bottom: 30px;
             font-style: italic;
+            padding: 0 20px;
         }
         
         .human {
             position: relative;
-            width: 300px;
-            height: 500px;
-            margin: 40px 0;
+            width: clamp(180px, 60vw, 300px);
+            height: clamp(300px, 80vw, 500px);
+            margin: 20px 0;
         }
         
         .body-outline {
@@ -87,72 +91,74 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             text-align: center;
             line-height: 1.2;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
         
-        .neuron-cluster:hover {
-            transform: scale(1.2);
+        .neuron-cluster:hover, .neuron-cluster:active {
+            transform: scale(1.15);
             z-index: 10;
         }
         
         .neuron-cluster.brain {
-            width: 80px;
-            height: 80px;
+            width: clamp(50px, 18vw, 80px);
+            height: clamp(50px, 18vw, 80px);
             background: var(--brain);
-            top: 30px;
+            top: clamp(15px, 5vw, 30px);
             left: 50%;
             transform: translateX(-50%);
             box-shadow: 0 0 40px var(--brain);
         }
         
-        .neuron-cluster.brain:hover {
-            transform: translateX(-50%) scale(1.2);
+        .neuron-cluster.brain:hover, .neuron-cluster.brain:active {
+            transform: translateX(-50%) scale(1.15);
         }
         
         .neuron-cluster.heart {
-            width: 50px;
-            height: 50px;
+            width: clamp(32px, 10vw, 50px);
+            height: clamp(32px, 10vw, 50px);
             background: var(--heart);
-            top: 140px;
+            top: clamp(85px, 25vw, 140px);
             left: 50%;
             transform: translateX(-50%);
             box-shadow: 0 0 30px var(--heart);
         }
         
-        .neuron-cluster.heart:hover {
-            transform: translateX(-50%) scale(1.2);
+        .neuron-cluster.heart:hover, .neuron-cluster.heart:active {
+            transform: translateX(-50%) scale(1.15);
         }
         
         .neuron-cluster.gut {
-            width: 70px;
-            height: 70px;
+            width: clamp(45px, 15vw, 70px);
+            height: clamp(45px, 15vw, 70px);
             background: var(--gut);
-            top: 230px;
+            top: clamp(145px, 42vw, 230px);
             left: 50%;
             transform: translateX(-50%);
             box-shadow: 0 0 30px var(--gut);
             color: #333;
         }
         
-        .neuron-cluster.gut:hover {
-            transform: translateX(-50%) scale(1.2);
+        .neuron-cluster.gut:hover, .neuron-cluster.gut:active {
+            transform: translateX(-50%) scale(1.15);
         }
         
         .neuron-cluster.spine {
-            width: 30px;
-            height: 180px;
+            width: clamp(18px, 6vw, 30px);
+            height: clamp(110px, 38vw, 180px);
             background: var(--spine);
-            top: 100px;
+            top: clamp(60px, 18vw, 100px);
             left: 50%;
             transform: translateX(-50%);
-            border-radius: 20px;
+            border-radius: clamp(10px, 4vw, 20px);
             box-shadow: 0 0 30px var(--spine);
         }
         
-        .neuron-cluster.spine:hover {
-            transform: translateX(-50%) scale(1.2);
+        .neuron-cluster.spine:hover, .neuron-cluster.spine:active {
+            transform: translateX(-50%) scale(1.15);
         }
         
         .neuron-cluster .count {
@@ -162,17 +168,20 @@
         
         .info-panel {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            max-width: 500px;
-            background: rgba(20, 20, 30, 0.95);
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 100%;
+            background: rgba(20, 20, 30, 0.98);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
+            border-radius: 20px 20px 0 0;
             padding: 25px;
             backdrop-filter: blur(20px);
-            transform: translateY(150%);
+            transform: translateY(110%);
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 60vh;
+            overflow-y: auto;
+            z-index: 100;
         }
         
         .info-panel.visible {
@@ -198,16 +207,16 @@
         
         .factoids {
             display: flex;
-            gap: 20px;
+            gap: 10px;
             margin-top: 20px;
             flex-wrap: wrap;
         }
         
         .factoid {
             background: rgba(255, 255, 255, 0.05);
-            padding: 12px 18px;
+            padding: 10px 14px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s;
         }
@@ -220,9 +229,10 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #444;
             animation: pulse 2s ease-in-out infinite;
+            text-align: center;
         }
         
         @keyframes pulse {
@@ -231,21 +241,36 @@
         }
         
         .quote {
-            position: fixed;
-            top: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1rem;
+            position: relative;
+            font-size: clamp(0.85rem, 3vw, 1rem);
             color: #555;
             font-style: italic;
-            max-width: 600px;
+            max-width: clamp(280px, 90vw, 600px);
             text-align: center;
             opacity: 0;
             transition: opacity 0.5s;
+            padding: 0 20px;
+            margin-bottom: 10px;
         }
         
         .quote.visible {
             opacity: 1;
+        }
+        
+        @media (max-width: 480px) {
+            .hero {
+                padding-bottom: 40px;
+            }
+            .info-panel {
+                padding: 20px;
+            }
+            .factoids {
+                gap: 8px;
+            }
+            .factoid {
+                padding: 8px 12px;
+                font-size: 0.7rem;
+            }
         }
         
         .spark {
@@ -397,7 +422,25 @@
                     <div className={`info-panel ${selected ? 'visible' : ''}`}>
                         {selected && (
                             <>
-                                <h3>{selected.name}</h3>
+                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px'}}>
+                                    <h3>{selected.name}</h3>
+                                    <button 
+                                        onClick={(e) => { e.stopPropagation(); setSelected(null); }}
+                                        style={{
+                                            background: 'rgba(255,255,255,0.1)',
+                                            border: 'none',
+                                            color: '#fff',
+                                            width: '32px',
+                                            height: '32px',
+                                            borderRadius: '50%',
+                                            cursor: 'pointer',
+                                            fontSize: '18px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}
+                                    >✕</button>
+                                </div>
                                 <div className="neuron-count">{selected.neurons} neurons</div>
                                 <p>{selected.fact}</p>
                                 {selected.quote && (
